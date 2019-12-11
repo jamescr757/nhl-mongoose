@@ -1,16 +1,7 @@
-// Using the tools and techniques you learned so far,
-// you will scrape a website of your choice, then place the data
-// in a MongoDB database. Be sure to make the database and collection
-// before running this exercise.
-
-// Consult the assignment files from earlier in class
-// if you need a refresher on Cheerio.
-
-// Dependencies
 const express = require("express");
+const exphbs = require("express-handlebars");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-// Require request and cheerio. This makes the scraping possible
 const axios = require("axios");
 const cheerio = require("cheerio");
 const moment = require("moment");
@@ -18,24 +9,27 @@ const moment = require("moment");
 // Initialize Express
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+
 // Database configuration
 const db = require("./models");
 
 // Use morgan logger for logging requests
 app.use(logger("dev"));
+app.use(express.static("public"));
+
+app.engine("handlebars", exphbs({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 
 mongoose.connect("mongodb://localhost/nhlGames", { useNewUrlParser: true });
 
 // Main route (simple Hello World Message)
 app.get("/", function(req, res) {
-  res.send("Hello world");
+  res.render("index", {});
 });
 
 // console.log(moment().calendar("Yesterday", "MM/DD/YYYY"));
 
-// When you visit this route, the server will
-// scrape data from the site of your choice, and save it to
-// MongoDB.
 app.get("/scrape", (req, res) => {
 
   // db.Completed.drop()
@@ -171,17 +165,12 @@ app.get("/scrape-future", (req, res) => {
 });
 
 
-// Route 1
-// =======
-// This route will retrieve all of the data
-// from the Completed collection as a json (this will be populated
-// by the data you scrape using the next route)
 app.get("/all", function(req, res) {
-  // Query: In our database, go to the animals collection, then "find" everything,
-  // but this time, sort it by weight (-1 means descending order)
+
   db.Completed.find({}).sort("-date")
     .then(data => res.json(data))
     .catch(error => console.log(error.message));
+
 });
 
 app.get("/team/:teamName", function(req, res) {
@@ -275,13 +264,7 @@ app.get("/date/:month/:day/:year", function(req, res) {
 });
 
 
-// TIP: Think back to how you pushed website data
-// into an empty array in the last class. How do you
-// push it into a MongoDB collection instead?
 
-/* -/-/-/-/-/-/-/-/-/-/-/-/- */
-
-// Listen on port 3000
-app.listen(3000, function() {
-  console.log("App running on http://localhost:3000");
+app.listen(PORT, function() {
+  console.log(`App running on http://localhost:${PORT}/`);
 });

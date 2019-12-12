@@ -1,19 +1,45 @@
+.jumbotron {
+    width: 94vw;
+    margin: 0 auto;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    width: 94vw;
+    margin: auto;
+}
+
+.btn {
+    border-radius: 0.5rem;
+}
+
+.date {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0;
+    padding-top: 0.75rem;
+}
+
 .main-container {
     display: flex;
     justify-content: center;
     width: 94vw;
     flex-wrap: wrap;
     margin: auto;
+    border-top: black 2px solid;
+    padding: 1.25rem 0;
 }
 
 .scorecard {
     flex-basis: 280px;
     max-width: 280px;
     height: 200px;
-    margin: 1.5rem 2rem;
+    margin: 1.25rem 1.25rem;
     box-shadow: 5px 5px 5px rgb(179, 175, 175);
     border-radius: 1rem;
-    cursor: pointer;
     border: black solid 1px;
     background-color: whitesmoke;
     flex-shrink: 0;
@@ -60,4 +86,9 @@
     /* text-align: center; */
     color: gray;
     margin: 0;
+}
+
+.loading-container {
+    flex-flow: column;
+    align-items: center;
 }

@@ -4,19 +4,43 @@
         <meta charset="UTF-8">
 
         <link rel="stylesheet" href="/assets/css/reset.css" type="text/css" />
+        <script src="https://kit.fontawesome.com/4d61cbf151.js" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="/assets/css/style.css" type="text/css" />
 
-        <title>JSPIN</title>
+        <title>JSPN</title>
 	</head>
 
 	<body>
+
+        <div class="jumbotron">
+            <h1 class="display-4">Welcome to JSPN!</h1>
+            <p class="lead">This is a hockey scores database. You can look at scores for any date since the year 2000.</p>
+        </div>
+
 		{{{ body }}}
 
+        <!-- Modal -->
+        <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <form id="date-form">
+                            <div class="form-group">
+                                <label for="userDate">Enter Date in the Past (MM/DD/YY)</label>
+                                <input type="text" class="form-control" id="userDate" placeholder="12/10/2019">
+                            </div>
+                        </form>
+                        <p id="user-message"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <script src="https://code.jquery.com/jquery.js"></script>
+
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
         <script src="/assets/javascript/app.js"></script>
 	</body>
 </html>

@@ -1,7 +1,11 @@
 
 <div class="main-container loading-container">
 
-    <h3 class="my-5">We're retrieving scores from <span class="text-success" id="loading-date">{{date}}</span></h3>
+    {{#if dateIsYesterday}}
+        <h3 class="my-5">We're retrieving scores from <span class="text-success" id="loading-date">yesterday</span></h3>
+    {{else}}
+        <h3 class="my-5">We're retrieving scores from <span class="text-success" id="loading-date">{{date}}</span></h3>
+    {{/if}}
 
     <div id="spinner-div">
         <i class="fas fa-spin fa-spinner fa-3x"></i>

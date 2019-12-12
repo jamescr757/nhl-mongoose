@@ -6,7 +6,11 @@
 
 <div class="main-container">
     {{#if noRecords}}
-        <h4 class="mt-3 text-primary">Sorry, there were no games played that day. Please try another day.</h4>
+        <h4 class="mt-3 text-primary">Sorry, no results for that day. Please try another day.</h4>
+    {{/if}}
+
+    {{#if noRecordsYesterday}}
+        <h4 class="mt-3 text-primary">There were no games played yesterday. Please try another day.</h4>
     {{/if}}
 
     {{#each gameArray}}

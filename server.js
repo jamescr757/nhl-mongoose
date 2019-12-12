@@ -108,15 +108,31 @@ app.get("/", function(req, res) {
   
 });
 
+app.get("/scrape/past-date/:date", (req, res) => {
+    
+  scrapeScores(req.params.date);
+
+  res.status(200).end();
+
+});
+
 app.get("/loading/:date", (req, res) => {
 
   const dateDisplay = moment(req.params.date).format("dddd, MMMM Do, YYYY");
 
-  res.render("loading", { date: dateDisplay });
+  const contextObj = { date: dateDisplay }
 
+  const yesterday = moment().subtract(1, 'days').format("YYYYMMDD");
+
+  if (req.params.date === yesterday) contextObj.dateIsYesterday = true;
+  
+  res.render("loading", contextObj);
+  
 });
 
 app.get("/date/:date", function(req, res) {
+
+  const yesterday = moment().subtract(1, 'days').format("YYYYMMDD");
 
   const dateDisplay = moment(req.params.date).format("dddd, MMMM Do, YYYY");
 
@@ -130,9 +146,9 @@ app.get("/date/:date", function(req, res) {
       date: dateDisplay
     }
 
-    if (data.length === 0) {
-      contextObj.noRecords = true;
-    }
+    if (data.length === 0 && req.params.date === yesterday) contextObj.noRecordsYesterday = true;
+
+    else if (data.length === 0) contextObj.noRecords = true;
 
     res.render("index", contextObj);
   })
@@ -145,23 +161,16 @@ app.get("/date/:date", function(req, res) {
 
 app.get("/check/:date", function(req, res) {
 
-  const dateDisplay = moment(req.params.date).format("dddd, MMMM Do, YYYY");
-
   db.Completed.find({
     date: req.params.date
   })
   .then((data) => {
 
-    const contextObj = {
-      gameArray: data,
-      date: dateDisplay
-    }
-
     if (data.length > 0) {
       // finished with scrape, can tell front-end to load scores page
       res.status(200).end();
     } else {
-      // no error, just not finished with scrape yet or day has no games
+      // no error, but need to tell front-end to not load scores page yet
       res.status(400).end();
     }
 
@@ -171,14 +180,6 @@ app.get("/check/:date", function(req, res) {
     console.log(error.message)
   })
   
-});
-
-app.get("/scrape/past-date/:date", (req, res) => {
-    
-  scrapeScores(req.params.date);
-
-  res.status(200).end();
-
 });
 
 app.listen(PORT, function() {

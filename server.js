@@ -6,7 +6,6 @@ const axios = require("axios");
 const cheerio = require("cheerio");
 const moment = require("moment");
 
-// Initialize Express
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -159,11 +158,10 @@ app.get("/check/:date", function(req, res) {
     }
 
     if (data.length > 0) {
-      // finished with scrape, render scores
-      // res.redirect("/date/" + req.params.date);
+      // finished with scrape, can tell front-end to load scores page
       res.status(200).end();
     } else {
-      // no error, just not finished with scrape yet
+      // no error, just not finished with scrape yet or day has no games
       res.status(400).end();
     }
 

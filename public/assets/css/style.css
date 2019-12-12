@@ -1,0 +1,63 @@
+.main-container {
+    display: flex;
+    justify-content: center;
+    width: 94vw;
+    flex-wrap: wrap;
+    margin: auto;
+}
+
+.scorecard {
+    flex-basis: 280px;
+    max-width: 280px;
+    height: 200px;
+    margin: 1.5rem 2rem;
+    box-shadow: 5px 5px 5px rgb(179, 175, 175);
+    border-radius: 1rem;
+    cursor: pointer;
+    border: black solid 1px;
+    background-color: whitesmoke;
+    flex-shrink: 0;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.team-name {
+    font-size: 1.5rem;
+    margin-bottom: 0rem;
+    font-weight: bold;
+}
+
+.score-num {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.team-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: 0.45rem 1rem;
+}
+
+.score {
+    margin-right: 1.75rem;
+}
+
+.home-team, .away-team {
+    margin-left: 1.75rem;
+    text-transform: capitalize;
+}
+
+.at-span {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.team-record {
+    /* text-align: center; */
+    color: gray;
+    margin: 0;
+}

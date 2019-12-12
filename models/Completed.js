@@ -9,12 +9,23 @@ const CompletedSchema = new Schema({
         required: "Date is required"
     },
 
+    gameId: {
+        required: "Game ID required",
+        type: String,
+        unique: true
+    },
+
     teams: {
         type: Array
     },
 
     scoreline: {
         type: String
+    },
+
+    score: {
+        type: Boolean, 
+        default: true
     },
 
     winner: {
@@ -37,11 +48,19 @@ const CompletedSchema = new Schema({
         type: String
     },
 
+    homeScore: {
+        type: String
+    },
+
     awayTeam: {
         type: String
     },
 
     awayTeamRecord: {
+        type: String
+    },
+
+    awayScore: {
         type: String
     },
 

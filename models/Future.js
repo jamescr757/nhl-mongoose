@@ -9,6 +9,12 @@ const FutureSchema = new Schema({
         required: "Date is required"
     },
 
+    gameId: {
+        required: "Game ID required",
+        type: String,
+        unique: true
+    },
+
     teams: {
         type: Array
     },

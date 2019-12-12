@@ -23,89 +23,179 @@ app.set("view engine", "handlebars");
 
 mongoose.connect("mongodb://localhost/nhlGames", { useNewUrlParser: true });
 
+const teamsArray = ["bruins", "sabres", "red wings", "panthers", "canadiens", "senators", "lightning", "maple leafs", "hurricanes", "blue jackets", "devils", "islanders", "rangers", "flyers", "penguins", "capitals", "blackhawks", "avalanche", "stars", "wild", "predators", "blues", "jets", "ducks", "coyotes", "flames", "oilers", "golden knights", "kings", "sharks", "canucks"];
+
+function teamIDGenerator(teamName) {
+    return teamsArray.indexOf(teamName);
+}
+
 // Main route (simple Hello World Message)
 app.get("/", function(req, res) {
-  res.render("index", {});
+  const yesterday = moment().subtract(1, 'days').format("YYYYMMDD");
+
+  db.Completed.find({
+    date: yesterday
+  })
+  .then((data) => {
+    res.render("index", { gameArray: data });
+  })
+  .catch(error => console.log(error.message))
+  
+});
+
+app.get("/date/:date", function(req, res) {
+
+  db.Completed.find({
+    date: req.params.date
+  })
+  .then((data) => {
+    res.render("index", { gameArray: data });
+  })
+  .catch(error => console.log(error.message))
+  
 });
 
 // console.log(moment().calendar("Yesterday", "MM/DD/YYYY"));
 
 app.get("/scrape", (req, res) => {
-
-  // db.Completed.drop()
-
-  for (j = 10; j < 13; j ++) {
-    const monthNum = j;
-    let numDays;
-
-    if (monthNum === 10) numDays = 32;
-
-    else if (monthNum === 11) numDays = 31;
-
-    else numDays = 11;
   
-    for (let i = 1; i < numDays; i ++) {
+  const yesterday = moment().subtract(1, 'days').format("YYYYMMDD");
+    
+  axios.get(`https://www.espn.com/nhl/scoreboard/_/date/${yesterday}`).then(function(response) {
 
-      let dateNum;
-      if (i < 10) dateNum = `0${i}`;
-    
-      else dateNum = i;
-    
-      axios.get(`https://www.espn.com/nhl/scoreboard/_/date/2019${monthNum}${dateNum}`).then(function(response) {
-    
-        var $ = cheerio.load(response.data);
+    var $ = cheerio.load(response.data);
+  
+    const scores = $(".Scoreboard").find(".ScoreCell__Score")
+  
+    const teams = $(".Scoreboard").find(".ScoreCell__TeamName");
+
+    const records = $(".Scoreboard").find("span.ScoreboardScoreCell__Record");
+
+    const periods = $(".Scoreboard").find(".ScoreboardScoreCell__Headings");
+
+    for (i = 0; i < periods.length; i++) {
+      const teamIndex = i * 2;
+
+      const numberOfPeriods = periods[`${i}`].children.length - 1;
+
+      let overtime;
+      if (numberOfPeriods > 3) overtime = true;
+
+      else overtime = false;
+
+      const awayTeam = teams[teamIndex].children[0].data.toLowerCase();
+      const awayID = teamIDGenerator(awayTeam);
+      const awayScore = scores[teamIndex].children[0].data;
       
-        const scores = $(".Scoreboard").find(".ScoreCell__Score")
-      
-        const teams = $(".Scoreboard").find(".ScoreCell__TeamName");
+      const homeTeam = teams[teamIndex + 1].children[0].data.toLowerCase();
+      const homeID = teamIDGenerator(homeTeam);
+      const homeScore = scores[teamIndex + 1].children[0].data;
 
-        const records = $(".Scoreboard").find("span.ScoreboardScoreCell__Record");
+      let winner;
+      let loser;
+      if (awayScore > homeScore) {
 
-        const periods = $(".Scoreboard").find(".ScoreboardScoreCell__Headings");
-    
-        for (i = 0; i < periods.length; i++) {
-          const teamIndex = i * 2;
+        winner = awayTeam;
+        loser = homeTeam;
 
-          const numberOfPeriods = periods[`${i}`].children.length - 1;
-          let overtime;
-          if (numberOfPeriods > 3) overtime = true;
+      } else {
 
-          else overtime = false;
+        winner = homeTeam;
+        loser = awayTeam;
 
-          let winner;
-          let loser;
-          if (scores[teamIndex].children[0].data > scores[teamIndex + 1].children[0].data) {
+      }
 
-            winner = teams[teamIndex].children[0].data;
-            loser = teams[teamIndex + 1].children[0].data;
-
-          } else {
-
-            winner = teams[teamIndex + 1].children[0].data;
-            loser = teams[teamIndex].children[0].data;
-
-          }
-
-          db.Completed.create({
-            date: `${monthNum}/${dateNum}/2019`,
-            teams: [`${teams[teamIndex].children[0].data}`, `${teams[teamIndex + 1].children[0].data}`],
-            scoreline: `${teams[teamIndex].children[0].data}: ${scores[teamIndex].children[0].data} || ${teams[teamIndex + 1].children[0].data}: ${scores[teamIndex + 1].children[0].data}`,
-            winner: winner,
-            loser: loser,
-            overtime: overtime,
-            homeTeam: `${teams[teamIndex + 1].children[0].data}`,
-            homeTeamRecord: `${records[teamIndex + 1].children[0].data}`,
-            awayTeam: `${teams[teamIndex].children[0].data}`,
-            awayTeamRecord: `${records[teamIndex].children[0].data}`,
-          })
-        }
-    
-        
+      db.Completed.create({
+        date: `${yesterday}`,
+        gameId: `${yesterday}${awayID}${homeID}`,
+        teams: [`${awayTeam}`, `${homeTeam}`],
+        scoreline: `${awayTeam}: ${awayScore} || ${homeTeam}: ${homeScore}`,
+        winner,
+        loser,
+        overtime,
+        homeTeam, 
+        homeTeamRecord: `${records[teamIndex + 1].children[0].data}`,
+        homeScore, 
+        awayTeam, 
+        awayTeamRecord: `${records[teamIndex].children[0].data}`,
+        awayScore, 
       })
-      .catch(error => console.log(error.message));
-    
     }
-  }
+
+    
+  })
+  .catch(error => console.log(error.message));
+    
+  res.send("Scrape complete");
+});
+
+app.get("/scrape/past-date/:date", (req, res) => {
+    
+  axios.get(`https://www.espn.com/nhl/scoreboard/_/date/${req.params.date}`).then(function(response) {
+
+    var $ = cheerio.load(response.data);
+  
+    const scores = $(".Scoreboard").find(".ScoreCell__Score")
+  
+    const teams = $(".Scoreboard").find(".ScoreCell__TeamName");
+
+    const records = $(".Scoreboard").find("span.ScoreboardScoreCell__Record");
+
+    const periods = $(".Scoreboard").find(".ScoreboardScoreCell__Headings");
+
+    for (i = 0; i < periods.length; i++) {
+      const teamIndex = i * 2;
+
+      const numberOfPeriods = periods[`${i}`].children.length - 1;
+
+      let overtime;
+      if (numberOfPeriods > 3) overtime = true;
+
+      else overtime = false;
+
+      const awayTeam = teams[teamIndex].children[0].data.toLowerCase();
+      const awayID = teamIDGenerator(awayTeam);
+      const awayScore = scores[teamIndex].children[0].data;
+      
+      const homeTeam = teams[teamIndex + 1].children[0].data.toLowerCase();
+      const homeID = teamIDGenerator(homeTeam);
+      const homeScore = scores[teamIndex + 1].children[0].data;
+
+      let winner;
+      let loser;
+      if (awayScore > homeScore) {
+
+        winner = awayTeam;
+        loser = homeTeam;
+
+      } else {
+
+        winner = homeTeam;
+        loser = awayTeam;
+
+      }
+
+      db.Completed.create({
+        date: `${req.params.date}`,
+        gameId: `${req.params.date}${awayID}${homeID}`,
+        teams: [`${awayTeam}`, `${homeTeam}`],
+        scoreline: `${awayTeam}: ${awayScore} || ${homeTeam}: ${homeScore}`,
+        winner,
+        loser,
+        overtime,
+        homeTeam, 
+        homeTeamRecord: `${records[teamIndex + 1].children[0].data}`,
+        homeScore, 
+        awayTeam, 
+        awayTeamRecord: `${records[teamIndex].children[0].data}`,
+        awayScore, 
+      })
+    }
+
+    
+  })
+  .catch(error => console.log(error.message));
+    
   res.send("Scrape complete");
 });
 

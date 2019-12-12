@@ -1,0 +1,33 @@
+
+
+<div class="main-container">
+
+    {{#each gameArray}}
+    <div class="scorecard" data-id="{{this._id}}">
+        <div class="team-container">
+            <div class="away-team">
+                <p class="team-name">{{this.awayTeam}}<span class="at-span">@</span></p>
+                <p class="team-record">({{this.awayTeamRecord}})</p>
+            </div>
+            {{#if this.score}}
+            <div class="score away-score">
+                <p class="score-num">{{this.awayScore}}</p>
+            </div>
+            {{/if}}
+        </div>
+        <div class="team-container">
+            <div class="home-team">
+                <p class="team-name">{{this.homeTeam}}</p>
+                <p class="team-record">({{this.homeTeamRecord}})</p>
+            </div>
+            {{#if this.score}}
+            <div class="score home-score">
+                <p class="score-num">{{this.homeScore}}</p>
+            </div>
+            {{/if}}
+        </div>
+        
+    </div>
+    {{/each}}
+
+</div>

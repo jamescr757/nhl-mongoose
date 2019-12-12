@@ -1,7 +1,12 @@
 $(document).ready(() => {
 
     let userDate = $("#loading-date").text();
-    const userDateFormatted = moment(userDate, "dddd, MMMM Do, YYYY").format("YYYYMMDD");
+
+    let userDateFormatted;
+
+    if (userDate === "yesterday") userDateFormatted = moment().subtract(1, 'days').format("YYYYMMDD");
+    
+    else userDateFormatted = moment(userDate, "dddd, MMMM Do, YYYY").format("YYYYMMDD");
 
     function sendToDatePage() {
         location.href = "/date/" + userDateFormatted; 

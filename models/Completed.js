@@ -62,11 +62,6 @@ const CompletedSchema = new Schema({
 
     awayScore: {
         type: String
-    },
-
-    gameNote: {
-        type: Schema.Types.ObjectId,
-        ref: "GameNote"
     }
 
 });
